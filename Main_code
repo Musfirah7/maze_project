@@ -1,0 +1,144 @@
+
+from pyamaze import COLOR
+from maze import *
+from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+from PIL import Image, ImageTk
+import csv
+root = Tk()
+root.geometry('1400x1400')
+root.title("The Maze Runner")
+canvas= Canvas (root, width=1400, height=1400)
+canvas.pack()
+var1=IntVar()
+var2=IntVar()
+var3=IntVar()
+var4=IntVar()
+var5=IntVar()
+var6=IntVar()
+var7=IntVar()
+def print_selection():
+    #reading csv file
+    rows=[]
+    with open ('maze--2023-01-05--22-30-19.csv','r') as csvfile: 
+        reader = csv.reader(csvfile)
+        for row in reader:
+            rows.append(row)
+        #print(rows)
+    #Edit the Data
+    
+    if (var1.get()==1): #c1=Green
+        rows[25] = ['(10, 2)', '0', '1', '0', '1']
+        rows[24] = ['(9, 2)', '0', '0', '1', '0']
+    if (var2.get()==1): #c2=Red
+        rows[126] = ['(6, 9)', '1', '0', '1', '0']
+        rows[111] = ['(6, 8)', '0', '1', '0', '0']
+    if (var3.get()==1): #c3=Blue
+        rows[145] = ['(10, 10)', '0', '1', '0', '1']
+        rows[144] = ['(9, 10)', '0', '0', '1', '0']
+    if (var4.get()==1): #c4=Purple
+        rows[214] = ['(4, 15)', '0', '1', '0', '1']
+        rows[213] = ['(3, 15)', '0', '1', '0', '0']
+    if (var5.get()==1): #c5=Brown
+        rows[173] = ['(8, 12)', '1', '0', '0', '0']
+        rows[172] = ['(7, 12)', '0', '1', '1', '0']
+    if (var6.get()==1): #c6=White
+        rows[205] = ['(10, 14)', '1', '0', '0', '0']
+        rows[190] = ['(10, 13)', '0', '1', '0', '0']
+    if (var7.get()==1): #c7=Yellow ,error:no path found
+        rows[178] = ['(13, 12)', '0', '1', '0', '0']
+        rows[177] = ['(12, 12)', '1', '0', '1', '0']
+    
+    #Write the Data to File
+    with open('m1copy.csv', 'w',newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(rows)
+    
+def draw_onclick():
+    try:
+        if (var1.get()==0) and (var2.get()==0) and (var3.get()==0) and (var4.get()==0) and (var5.get()==0) and (var6.get()==0) and (var7.get()==0):
+            m=maze(15,15) #2nd page after displaying opening page 
+            #m.CreateMaze(saveMaze=True,loopPercent=20)
+            m.CreateMaze(loadMaze='maze--2023-01-05--22-30-19.csv',theme=COLOR.dark)
+            path=Astar(m)
+            a=agent(m,footprints=True,shape='arrow',color='red')
+            m.tracePath({a:m.path},delay=300)
+            m.run()
+        else:
+            m=maze(15,15)
+            m=maze(15,15) #2nd page after displaying opening page 
+            #m.CreateMaze(saveMaze=True,loopPercent=20)
+            m.CreateMaze(loadMaze='m1copy.csv',theme=COLOR.dark)
+            path=Astar(m)
+            a=agent(m,footprints=True,shape='arrow',color='red')
+            m.tracePath({a:m.path},delay=300)
+            m.run()
+    except KeyError:
+        win_error=Toplevel()
+        win_error.title("Error")
+        win_error.geometry('500x281')
+        cn= Canvas (win_error, width=1400, height=1400)
+        cn.pack()
+        photo=PhotoImage(file='e_img(resize).png')
+        berror=Button (cn, image=photo,command=win_error.destroy).pack()
+        
+        win_error.mainloop()
+def win1open():
+    win1=Toplevel(root)
+    win1.title('Customize your Maze!!')
+    
+    win1.geometry('1400x1400')
+    f1 = Frame(win1, width=700, height=1400,background='black',)
+    f1.pack(side='left')
+    f2 = Frame(win1, width=700, height=1400)
+    f2.pack(side='right')
+    f3 = Frame(f2, width=700, height=340)
+    f3.pack(side='top')
+    
+    f4 = Frame(f2, width=700, height=350)
+    f4.pack(side='bottom')
+
+    # Create an object of tkinter ImageTk
+    
+    img_2 = ImageTk.PhotoImage(Image.open("pic2.1.jpg"))
+    
+    # Create a Label Widget to display the text or Image
+    label = Label(f1, image = img_2)
+    label.pack()
+    #displaying text
+    img_text= ImageTk.PhotoImage(Image.open("textdisplay.png"))
+    l = Label(f3, image = img_text)
+    l.pack()
+    
+    c1 = Checkbutton(f4, font=('Helvetica','12','bold italic'),activebackground='#45a247',padx=60,pady=10,text='Green',variable=var1, onvalue=1, offvalue=0, command=print_selection)
+    c1.grid(row=1,column=1)
+    c2 = Checkbutton(f4,font=('Helvetica','12','bold italic'),activebackground='#f85032' ,padx=60,pady=10,text='Red',variable=var2, onvalue=1, offvalue=0, command=print_selection)
+    c2.grid(row=1,column=2)
+    c3 = Checkbutton(f4, font=('Helvetica','12','bold italic'),activebackground='#283c86',padx=60,pady=10,text='Blue',variable=var3, onvalue=1, offvalue=0, command=print_selection)
+    c3.grid(row=1,column=3)
+    c4 = Checkbutton(f4, font=('Helvetica','12','bold italic'),activebackground='#ad5389',padx=60,pady=10,text='Purple',variable=var4, onvalue=1, offvalue=0, command=print_selection)
+    c4.grid(row=2,column=1)
+    c5 = Checkbutton(f4, font=('Helvetica','12','bold italic'),activebackground='#D38312',padx=60,pady=10,text='Brown',variable=var5, onvalue=1, offvalue=0, command=print_selection)
+    c5.grid(row=2,column=2)
+    c6 = Checkbutton(f4,font=('Helvetica','12','bold italic'),activebackground='#FFFFFF',padx=60,pady=10, text='White',variable=var6, onvalue=1, offvalue=0, command=print_selection)
+    c6.grid(row=2,column=3)
+    c7 = Checkbutton(f4, font=('Helvetica','12','bold italic'),activebackground='#FDC830',padx=60,pady=10,text='Yellow',variable=var7, onvalue=1, offvalue=0, command=print_selection)
+    c7.grid(row=3,column=2)
+
+    b2=Button(f4,font=('Helvetica','12','bold italic'),activebackground='#2c3e50',text='Done',command=draw_onclick).grid(row=4,column=2,padx=50,pady=50)
+
+    win1.mainloop()
+    
+
+
+        
+img_file=Image.open("PLAY.png")
+img_file = img_file.resize((1400, 20))
+img = ImageTk.PhotoImage (img_file)
+b1=Button (canvas, image=img, command=win1open).pack()
+
+
+mainloop()
+
